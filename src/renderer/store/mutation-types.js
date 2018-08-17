@@ -1,0 +1,53 @@
+export const SET_SINGER = 'SET_SINGER'
+
+export const SET_PLAYING_STATE = 'SET_PLAYING_STATE'
+
+export const SET_FULL_SCREEN = 'SET_FULL_SCREEN'
+
+export const SET_PLAYLIST = 'SET_PLAYLIST'
+
+export const SET_SEQUENCE_LIST = 'SET_SEQUENCE_LIST'
+
+export const SET_PLAY_MODE = 'SET_PLAY_MODE'
+
+export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX'
+
+export const SET_DISC = 'SET_DISC'
+
+export const SET_TOP_LIST = 'SET_TOP_LIST'
+
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+
+export const SET_PLAY_HISTORY = 'SET_PLAY_HISTORY'
+
+export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'
+
+export const SET_ALBUM_LIST = 'SET_ALBUM_LIST'
+
+export const SET_ALBUM = 'SET_ALBUM'
+
+export const SET_TRACKS = 'SET_TRACKS'
+
+export const SET_CURRENT_SONG = 'SET_CURRENT_SONG'
+
+export const SET_PROGRESS = 'SET_PROGRESS'
+
+export const SET_DOWNLOAD_SONG = 'SET_DOWNLOAD_SONG'
+
+export const SET_DIR_PATH = 'SET_DIR_PATH'
+
+export const SET_OFFSET = 'SET_OFFSET'
+
+export const SET_CAT = 'SET_CAT'
+
+export const SET_CAT_LIST = 'SET_CAT_LIST'
+
+export const RESET_OFFSET = 'RESET_OFFSET'
+
+export const SET_POSITION = 'SET_POSITION'
+
+export const SET_DURATION = 'SET_DURATION'
+
+export const SET_ISPLAYING = 'SET_ISPLAYING'
+
+export const SET_LOADING_STATE = 'SET_LOADING_STATE'
