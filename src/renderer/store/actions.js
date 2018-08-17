@@ -124,6 +124,7 @@ export const play = function ({commit,state}) {
         commit(types.SET_CURRENT_INDEX,soundManager.soundIDs[0])
         playTrack({commit,state},state.currentIndex)
     }else{
+        //不需要再去联网获取
         initPlayTrack(currentIndex,true,commit)
     }
 
@@ -138,11 +139,14 @@ export const pause = function({commit,state}){
 }
 //停止
 export const stop = function({commit,state}){
-    soundManager.stop(state.currentIndex)
+    //soundManager.stop(state.currentIndex)
+    pause({commit,state})
     commit(types.SET_POSITION,0)
     commit(types.SET_DURATION,0)
     commit(types.SET_PROGRESS,0)
     commit(types.SET_ISPLAYING,false)
+    soundManager.stopAll()
+    soundManager.unload(state.currentIndex)
     console.log('停止方法')
 }
 
@@ -243,7 +247,7 @@ export const addTrackArray = function ({commit, state}, trackArray) {
         }))
 }
 
-//加载第一首歌曲
+//第一次加载时使用
 export const loadTrack = function ({commit, state},track) {
     play({commit,state})
 }

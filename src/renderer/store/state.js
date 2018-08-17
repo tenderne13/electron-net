@@ -14,7 +14,12 @@ const state = {
         id:0,
         al:{
 
-        }
+        },
+        ar:[
+            {
+            }
+        ],
+        name:''
     },
     progress:0,
     downLoadSong:{},

@@ -6,7 +6,9 @@
             <div class="middle-content">
                 <div class="middle-slider">
                     <div class="words">
-                        <span>{{currentSong.name}}</span>
+                        <span class="songName">{{currentSong.name}}</span>
+
+                        <a class="author">{{currentSong.ar[0].name}}</a>
                     </div>
                     <Slider :value="progress" @on-change="setPositionValue" :tip-format="format"></Slider>
                 </div>
@@ -19,7 +21,7 @@
                 <Button shape="circle" type="primary" icon="ios-play" class="playChild backColor" @click="play" v-if="!isplaying"></Button>
                 <Button shape="circle" type="primary" icon="ios-pause" class="playChild backColor" @click="pause" v-else></Button>
                 <Button shape="circle" type="primary" icon="ios-skip-forward"  class="playChild backColor" @click="nextTrack"></Button>
-                <Avatar :src="currentSong.al.picUrl" />
+                <Avatar shape="square" size="large" :src="currentSong.al.picUrl" />
             </div>
         </div>
         <div class="right-footer">
@@ -33,7 +35,7 @@
         width: 200px;
         margin-left: -100%;
         .btn-group{
-            margin-left: 30px;
+            margin-left: 20px;
             .playChild{
                 margin-right: 10px;
             }
@@ -59,6 +61,13 @@
                     line-height: 14px;
                     position: relative;
                     top: 8px;
+                    .songName{
+                        font-size: 15px;
+                    }
+                    .author{
+                        font-size: 12px;
+                        margin-left: 15px;
+                    }
                 }
             }
         }
