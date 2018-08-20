@@ -30,7 +30,11 @@ const state = {
     position:0,
     duration:0,
     isplaying:false,
-    loadingState:0
+    loadingState:0,
+    //0：循环顺序 1:随机 2.单曲循环
+    playmode:0,
+    //播放列表是否显示
+    playlistShow:false
 }
 
 export default state

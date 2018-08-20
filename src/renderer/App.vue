@@ -10,25 +10,25 @@
                     <Menu width="auto"  active-name="1">
                         <MenuGroup title="推荐">
                             <MenuItem name="1" to="/">
-                                <Icon type="ios-musical-notes" />
+                                <Icon type="ios-musical-notes" size="20" />
                                 发现音乐
                             </MenuItem>
                             <MenuItem name="2" to="/info">
-                                <Icon type="ios-radio-outline" />
+                                <Icon type="ios-radio-outline" size="20"/>
                                 私人FM
                             </MenuItem>
                             <MenuItem name="3">
-                                <Icon type="ios-videocam-outline" />
+                                <Icon type="ios-videocam-outline" size="20"/>
                                 视频
                             </MenuItem>
                             <MenuItem name="4">
-                                <Icon type="md-contacts" />
+                                <Icon type="md-contacts" size="20"/>
                                 朋友
                             </MenuItem>
                         </MenuGroup>
                         <MenuGroup title="我的音乐">
                             <MenuItem name="5">
-                                <Icon type="ios-download-outline" />
+                                <Icon type="ios-download-outline" size="20"/>
                                 下载管理
                             </MenuItem>
                         </MenuGroup>
@@ -45,6 +45,7 @@
         <div class="mainFooter">
             <music-player></music-player>
         </div>
+        <play-list></play-list>
     </div>
   </div>
 </template>
@@ -52,11 +53,13 @@
 <script>
     import MusicHeader from './components/musicHeader/MusicHeader'
     import MusicPlayer from './components/player/Player'
+    import PlayList from './components/playlist/PlayList'
     import {mapGetters,mapMutations,mapActions} from 'vuex'
     export default {
         components:{
             MusicHeader,
-            MusicPlayer
+            MusicPlayer,
+            PlayList
         },
         computed:{
             ...mapGetters([
@@ -112,9 +115,37 @@
           overflow-y: auto;
           top:50px;
           bottom: 50px;
+          background: #fafafa;
+
+          .ivu-menu-vertical.ivu-menu-light:after{
+              width: 0;
+          }
 
           .fixedMenu{
               position: fixed;
+              top: 50px;
+              bottom: 50px;
+              overflow-y: auto;
+              background: #f5f5f7;
+              &::-webkit-scrollbar {/*滚动条整体样式*/
+                  width: 8px;     /*高宽分别对应横竖滚动条的尺寸*/
+                  height: 1px;
+              }
+
+              &::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+                  border-radius: 10px;
+                  -webkit-box-shadow: inset 0 0 5px rgba(225, 225, 226, 0.2);
+                  background: #e1e1e2;
+              }
+              &::-webkit-scrollbar-track {/*滚动条里面轨道*/
+                  -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+                  border-radius: 10px;
+                  background: #f5f5f7;
+              }
+
+              .ivu-menu-light{
+                  background: #f5f5f7;
+              }
           }
 
           .contentMargin{
@@ -148,6 +179,7 @@
           position: absolute;
           bottom: 0px;
           width: 100%;
+          background: #f5f5f7;
       }
   }
 

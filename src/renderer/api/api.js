@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3000/'
+const baseUrl = 'http://223.72.220.175/netease'
 import axios from 'axios'
 
 const TOP_PLAYLIST = baseUrl + 'top/playlist'
@@ -48,7 +48,7 @@ export function getMusicUrl(track) {
     return new Promise(((resolve, reject) => {
         axios.get(MUSIC_URL + '?id='+track.id)
             .then((result) => {
-                if(result.data.data[0].url){
+                if(result.data.data[0].url && result.data.data[0].url!=''){
                     track.url = result.data.data[0].url
                     resolve(track.url)
                 }else{

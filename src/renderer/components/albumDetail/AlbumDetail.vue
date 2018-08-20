@@ -1,5 +1,8 @@
 <template>
     <div class="album">
+        <div class="back">
+            <Button icon="ios-arrow-back" to="/" size="small" type="text">返回</Button>
+        </div>
         <div class="albumHeader">
             <div class="albumCover">
                 <img class="coverImg" :src="album.coverImgUrl">
@@ -26,10 +29,10 @@
                 </p>
             </div>
         </div>
-        <router-link to="/">返回</router-link>
         <div class="songList">
-            <Table size="small" class="listClass" stripe :columns="columns" :data="tracks"></Table>
+            <Table size="small" :loading="isLoading" class="listClass" stripe :columns="columns" :data="tracks"></Table>
         </div>
+        <BackTop></BackTop>
 
     </div>
 </template>
@@ -41,21 +44,24 @@
         display: block;
         width: 100%;
         overflow-y: auto;
+        .back{
+            padding-top: 10px;
+        }
         .songList{
-            padding: 10px;
+            /*padding: 10px;*/
             .listClass{
                 border: 0px;
             }
         }
         .albumHeader{
             padding: 20px;
-            display: block;
+            display: inline-flex;
             width: 100%;
             height: 260px;
             overflow: hidden;
             .albumCover{
-                float: left;
-                position: relative;
+                /*float: left;
+                position: relative;*/
                 width: 200px;
                 height: 200px;
                 margin-right: 20px;
@@ -98,11 +104,25 @@
                 }
                 .description{
                     word-wrap: break-word;
-                    width: 500px;
+                    width: 100%;
                     height: 50px;
                     text-overflow: ellipsis;
                     overflow-y: auto;
+                    &::-webkit-scrollbar {/*滚动条整体样式*/
+                        width: 8px;     /*高宽分别对应横竖滚动条的尺寸*/
+                        height: 1px;
+                    }
 
+                    &::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+                        border-radius: 10px;
+                        -webkit-box-shadow: inset 0 0 5px rgba(225, 225, 226, 0.2);
+                        background: #e1e1e2;
+                    }
+                    &::-webkit-scrollbar-track {/*滚动条里面轨道*/
+                        -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+                        border-radius: 10px;
+                        background: #ffffff;
+                    }
                 }
             }
         }
@@ -124,8 +144,7 @@
         },
         data() {
             return {
-                //tracks:[],
-                //albumList: []
+                isLoading:false,
                 columns: [
                     {
                         title: '标题',
@@ -167,8 +186,7 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.$Message.info(params.row.name)
-                                                this.setCurrentSong(params.row)
+                                                this.addTrack(params.row)
                                             }
                                         }
                                     }),
@@ -209,9 +227,10 @@
         },
         methods: {
             _getAlbumDetail(){
+                this.isLoading = true
                 getAlbumDetail(this.album.id).then((res)=>{
                     this.setTracks(res.playlist.tracks)
-                    //this.tracks = res.playlist.tracks
+                    this.isLoading = false
                 })
             },
             addToPlayList(){
@@ -222,7 +241,8 @@
                 setCurrentSong: 'SET_CURRENT_SONG'
             }),
             ...mapActions([
-                'addTrackArray'
+                'addTrackArray',
+                'addTrack'
             ])
         }
     }

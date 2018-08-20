@@ -51,3 +51,7 @@ export const SET_DURATION = 'SET_DURATION'
 export const SET_ISPLAYING = 'SET_ISPLAYING'
 
 export const SET_LOADING_STATE = 'SET_LOADING_STATE'
+
+export const ADD_TO_LIST = 'ADD_TO_LIST'
+
+export const SET_PLAYLIST_SHOW = 'SET_PLAYLIST_SHOW'

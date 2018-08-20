@@ -63,6 +63,15 @@ const matutaions = {
     },
     [types.SET_LOADING_STATE](state,loadingState){
       state.loadingState = loadingState
+    },
+    [types.ADD_TO_LIST](state,song){
+        state.playlist.push(song)
+    },
+    [types.SET_PLAY_MODE](state,playmode){
+        state.playmode = playmode
+    },
+    [types.SET_PLAYLIST_SHOW](state){
+        state.playlistShow = !state.playlistShow
     }
 
 }

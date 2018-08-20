@@ -1,16 +1,6 @@
 //人类人看懂的时间
 import state from "./state";
-
-function humanTime(input) {
-    function pad(d) {
-        return (d < 10) ? '0' + d.toString() : d.toString();
-    }
-
-    var min = (input / 1000 / 60) << 0,
-        sec = Math.floor((input / 1000) % 60);
-
-    return pad(min) + ':' + pad(sec);
-}
+import {humanTime} from '../api/util'
 
 
 export const singer = state => state.singer
