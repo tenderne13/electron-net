@@ -2,14 +2,25 @@ import * as types from './mutation-types'
 import '../util/soundmanager2'
 import {getMusicUrl} from '../api/api'
 import {Message} from 'iview'
+import {guid} from "../api/util";
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+
+Storage.prototype.getObject = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
+}
+
 export function saveFavorite(song) {
-    let songs = storage.get('favorite',[])
+    let songs = storage.get('favorite', [])
     insertArray(songs, song, (item) => {
         return song.id === item.id
     }, FAVORITE_MAX_LEN)
     storage.set(FAVORITE_KEY, songs)
     return songs
 }
+
 function insertArray(arr, val, compare, maxLen) {
     const index = arr.findIndex(compare)
     if (index === 0) {
@@ -24,24 +35,24 @@ function insertArray(arr, val, compare, maxLen) {
     }
 }
 
-export const saveFavoriteList = function ({commit},song){
-  commit(types.SET_FAVORITE_LIST,saveFavorite(song))
+export const saveFavoriteList = function ({commit}, song) {
+    commit(types.SET_FAVORITE_LIST, saveFavorite(song))
 }
 
 //播放器初始化
-export const playerInit = function ({commit,state}){
+export const playerInit = function ({commit, state}) {
     soundManager.setup({
         //url: '/path/to/swfs/',
         //flashVersion: 9,
         preferFlash: false, // prefer 100% HTML5 mode, where both supported
         debugMode: false, // enable debugging output ($log.debug() with HTML fallback)
         useHTML5Audio: true,
-        onready: function() {
+        onready: function () {
             console.log('播放器准备完毕开始加载歌单')
             //加载第一首歌
-            loadTrack({commit,state})
+            loadTrack({commit, state})
         },
-        ontimeout: function() {
+        ontimeout: function () {
             alert('SM2 failed to start. Flash missing, blocked or security error?');
             alert('The status is ' + status.success + ', the error type is ' + status.error.type);
         },
@@ -67,110 +78,111 @@ export const playerInit = function ({commit,state}){
             type: 'audio/mp3', // MIME-like hint for canPlay() tests, eg. 'audio/mp3'
             usePolicyFile: false, // enable crossdomain.xml request for remote domains (for ID3/waveform access)
             volume: 100, // self-explanatory. 0-100, the latter being the max.
-            whileloading: function() {
+            whileloading: function () {
                 //soundManager._writeDebug('sound '+this.id+' loading, '+this.bytesLoaded+' of '+this.bytesTotal);
-                var trackLoaded = ((this.bytesLoaded/this.bytesTotal)*100);
-                commit(types.SET_LOADING_STATE,trackLoaded)
+                var trackLoaded = ((this.bytesLoaded / this.bytesTotal) * 100);
+                commit(types.SET_LOADING_STATE, trackLoaded)
             },
-            whileplaying: function() {
+            whileplaying: function () {
                 //soundManager._writeDebug('sound '+this.id+' playing, '+this.position+' of '+this.duration);
                 //broadcast current playing track id
                 let currentTrack = this.id;
                 let trackProgress = ((this.position / this.duration) * 100);
-                commit(types.SET_POSITION,this.position)
-                commit(types.SET_DURATION,this.duration)
-                commit(types.SET_PROGRESS,trackProgress)
+                commit(types.SET_POSITION, this.position)
+                commit(types.SET_DURATION, this.duration)
+                commit(types.SET_PROGRESS, trackProgress)
 
 
             },
-            onfinish: function() {
+            onfinish: function () {
                 soundManager._writeDebug(this.id + ' finished playing');
-                commit(types.SET_POSITION,0)
-                commit(types.SET_DURATION,0)
-                commit(types.SET_PROGRESS,0)
-                commit(types.SET_ISPLAYING,false)
+                commit(types.SET_POSITION, 0)
+                commit(types.SET_DURATION, 0)
+                commit(types.SET_PROGRESS, 0)
+                commit(types.SET_ISPLAYING, false)
 
-                nextTrack({commit,state})
+                nextTrack({commit, state})
 
             }
         }
     });
 }
 
-function initPlayTrack(trackId,isResume,commit,state){
+function initPlayTrack(trackId, isResume, commit, state) {
     return new Promise((resolve, reject) => {
-        if(isResume !== true){
+        if (isResume !== true) {
             console.log('开始停止当前播放的音乐')
-            stop({commit,state})
-            commit(types.SET_CURRENT_INDEX,trackId)
+            stop({commit, state})
+            commit(types.SET_CURRENT_INDEX, trackId)
             var track = soundManager.getSoundById(trackId)
             resolve(track)
-        }else{
+        } else {
             soundManager.play(trackId)
-            commit(types.SET_ISPLAYING,true)
+            commit(types.SET_ISPLAYING, true)
         }
     })
 }
 
 //播放
-export const play = function ({commit,state}) {
+export const play = function ({commit, state}) {
     let currentIndex = state.currentIndex;
-    if(currentIndex == -1){
+    if (currentIndex == -1) {
         console.log('当前没有播放歌曲将播放列表第一个');
-        if(soundManager.soundIDs.length === 0) {
+        if (soundManager.soundIDs.length === 0) {
             console.log('当前列表中没有音乐')
             return;
         }
-        commit(types.SET_CURRENT_INDEX,soundManager.soundIDs[0])
-        playTrack({commit,state},state.currentIndex)
-    }else{
+        commit(types.SET_CURRENT_INDEX, soundManager.soundIDs[0])
+        playTrack({commit, state}, state.currentIndex)
+    } else {
         //不需要再去联网获取
-        initPlayTrack(currentIndex,true,commit)
+        initPlayTrack(currentIndex, true, commit)
     }
 
 
 }
 
 //暂停
-export const pause = function({commit,state}){
+export const pause = function ({commit, state}) {
     soundManager.pause(state.currentIndex)
-    console.log(state.currentIndex+'已暂停')
-    commit(types.SET_ISPLAYING,false)
+    console.log(state.currentIndex + '已暂停')
+    commit(types.SET_ISPLAYING, false)
 }
 //停止
-export const stop = function({commit,state}){
+export const stop = function ({commit, state}) {
     //soundManager.stop(state.currentIndex)
-    pause({commit,state})
-    commit(types.SET_POSITION,0)
-    commit(types.SET_DURATION,0)
-    commit(types.SET_PROGRESS,0)
-    commit(types.SET_ISPLAYING,false)
+    pause({commit, state})
+    commit(types.SET_POSITION, 0)
+    commit(types.SET_DURATION, 0)
+    commit(types.SET_PROGRESS, 0)
+    commit(types.SET_ISPLAYING, false)
     soundManager.stopAll()
     soundManager.unload(state.currentIndex)
 }
 
 //isInarray
-function isInArray(array,value){
-    for(var i = 0; i < array.length; i++) {
-        if(array[i].id === value) {
+function isInArray(array, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].id === value) {
             return i;
         }
     }
     return false;
 }
+
 //获取某个歌
-function getPlayList(state,key) {
-    if(typeof key === 'undefined'){
+function getPlayList(state, key) {
+    if (typeof key === 'undefined') {
         return state.playlist
-    }else{
+    } else {
         return state.playlist[key]
     }
 }
 
 //从播放列表里获取歌曲信息
-function getSongById(playlist,id){
-    for(let i=0;i<playlist.length;i++){
-        if(id == playlist[i].id){
+function getSongById(playlist, id) {
+    for (let i = 0; i < playlist.length; i++) {
+        if (id == playlist[i].id) {
             return playlist[i]
         }
     }
@@ -183,18 +195,18 @@ export const clearPlayList = function ({commit, state}) {
     return new Promise((resolve, reject) => {
         try {
             //先停止播放
-            stop({commit,state})
+            stop({commit, state})
 
-            commit(types.SET_PLAYLIST,[])
+            commit(types.SET_PLAYLIST, [])
 
             let smIdsLength = soundManager.soundIDs.length
 
-            for(let i=0;i<smIdsLength;i++){
+            for (let i = 0; i < smIdsLength; i++) {
                 soundManager.destroySound(soundManager.soundIDs[0])
             }
             console.log('清除完成可以进行下一步了')
             resolve()
-        }catch (e) {
+        } catch (e) {
             reject(e)
         }
     })
@@ -202,10 +214,10 @@ export const clearPlayList = function ({commit, state}) {
 
 }
 //添加单个
-export const addTrack = function ({commit, state},track) {
+export const addTrack = function ({commit, state}, track) {
     var inArrayKey = isInArray(state.playlist, track.id);
-    if(inArrayKey === false) {
-        commit(types.ADD_TO_LIST,track)
+    if (inArrayKey === false) {
+        commit(types.ADD_TO_LIST, track)
         soundManager.createSound({
             id: track.id,
             url: track.url
@@ -216,15 +228,15 @@ export const addTrack = function ({commit, state},track) {
 //添加歌单到播放器
 export const addTrackArray = function ({commit, state}, trackArray) {
     console.log('开始添加歌单')
-    clearPlayList({commit,state})
-        .then((result)=>{
-            if(typeof trackArray === 'undefined'){
+    clearPlayList({commit, state})
+        .then((result) => {
+            if (typeof trackArray === 'undefined') {
                 trackArray = state.tracks
             }
-            commit(types.SET_CURRENT_INDEX,-1)
+            commit(types.SET_CURRENT_INDEX, -1)
             //添加歌单到playList
-            commit(types.SET_PLAYLIST,trackArray)
-            for(var i = 0; i < trackArray.length; i++) {
+            commit(types.SET_PLAYLIST, trackArray)
+            for (var i = 0; i < trackArray.length; i++) {
                 var track = trackArray[i];
                 soundManager.createSound({
                     id: track.id,
@@ -232,12 +244,12 @@ export const addTrackArray = function ({commit, state}, trackArray) {
                 });
                 //var inArrayKey = isInArray(state.playlist, track.id);
                 //if(inArrayKey === false) {
-                    //$log.debug('song does not exists in playlist');
-                    //add to sound manager
+                //$log.debug('song does not exists in playlist');
+                //add to sound manager
 
-               // }
+                // }
             }
-            play({commit,state})
+            play({commit, state})
             console.log('添加完成')
         })
         .catch((reason => {
@@ -246,47 +258,48 @@ export const addTrackArray = function ({commit, state}, trackArray) {
 }
 
 //第一次加载时使用
-export const loadTrack = function ({commit, state},track) {
-    play({commit,state})
+export const loadTrack = function ({commit, state}, track) {
+    play({commit, state})
 }
+
 function getIndexByValue(array, value) {
-    for(var i = 0; i < array.length; i++) {
-        if(array[i] === value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === value) {
             return i;
         }
     }
     return false;
 }
 
-export const playTrack = function ({commit, state},trackId){
+export const playTrack = function ({commit, state}, trackId) {
 
-    let currentSong =  getSongById(state.playlist,trackId)
+    let currentSong = getSongById(state.playlist, trackId)
     console.log(currentSong)
-    commit(types.SET_CURRENT_SONG,currentSong)
+    commit(types.SET_CURRENT_SONG, currentSong)
 
-    initPlayTrack(trackId,false,commit,state)
+    initPlayTrack(trackId, false, commit, state)
         .then(getMusicUrl)
-        .then((result)=>{
+        .then((result) => {
             console.log('开始播放歌曲')
             soundManager.play(trackId)
-            commit(types.SET_ISPLAYING,true)
+            commit(types.SET_ISPLAYING, true)
         })
         .catch(reason => {
             Message.error(reason)
-            commit(types.SET_ISPLAYING,false)
+            commit(types.SET_ISPLAYING, false)
             console.log('开始尝试播放下一首歌')
-            nextTrack({commit,state})
+            nextTrack({commit, state})
         })
 }
 
 //下一首歌
-export const nextTrack = function ({commit, state}){
+export const nextTrack = function ({commit, state}) {
     let currentTrackKey = getIndexByValue(soundManager.soundIDs, state.currentIndex)
     var nextTrackKey = +currentTrackKey + 1;
     var nextTrackId = soundManager.soundIDs[nextTrackKey];
-    if(typeof nextTrackId !== 'undefined') {
-        console.log('下一首Id为:【'+nextTrackId+'】')
-        playTrack({commit,state},nextTrackId)
+    if (typeof nextTrackId !== 'undefined') {
+        console.log('下一首Id为:【' + nextTrackId + '】')
+        playTrack({commit, state}, nextTrackId)
     } else {
         Message.warning('最后一首了')
         /*//if no next track found
@@ -302,28 +315,28 @@ export const nextTrack = function ({commit, state}){
 }
 
 //上一首
-export const prevTrack = function ({commit, state}){
+export const prevTrack = function ({commit, state}) {
     let currentTrackKey = getIndexByValue(soundManager.soundIDs, state.currentIndex)
     var prevTrackKey = +currentTrackKey - 1;
     var prevTrackId = soundManager.soundIDs[prevTrackKey];
-    if(typeof prevTrackId !== 'undefined') {
-        let currentSong =  getSongById(state.playlist,prevTrackId)
+    if (typeof prevTrackId !== 'undefined') {
+        let currentSong = getSongById(state.playlist, prevTrackId)
         console.log(currentSong)
-        commit(types.SET_CURRENT_SONG,currentSong)
+        commit(types.SET_CURRENT_SONG, currentSong)
 
-        initPlayTrack(prevTrackId,false,commit,state)
+        initPlayTrack(prevTrackId, false, commit, state)
             .then(getMusicUrl)
-            .then((result)=>{
+            .then((result) => {
                 console.log('开始播放歌曲')
                 soundManager.play(prevTrackId)
-                commit(types.SET_ISPLAYING,true)
+                commit(types.SET_ISPLAYING, true)
             })
             .catch(reason => {
                 //console.error(reason)
                 Message.error(reason)
-                commit(types.SET_ISPLAYING,false)
+                commit(types.SET_ISPLAYING, false)
                 console.log('开始尝试播放上一首歌')
-                prevTrack({commit,state})
+                prevTrack({commit, state})
             })
     } else {
         Message.warning('没有上一首')
@@ -333,13 +346,29 @@ export const prevTrack = function ({commit, state}){
 
 
 export const setSongPosition = function ({commit, state}, persent) {
-    let tempPosition = state.duration*(persent/100)
-    commit(types.SET_POSITION,tempPosition)
-    soundManager.setPosition(state.currentIndex,tempPosition)
+    let tempPosition = state.duration * (persent / 100)
+    commit(types.SET_POSITION, tempPosition)
+    soundManager.setPosition(state.currentIndex, tempPosition)
 }
 
 //切换播放模式
-export const changePlayMode = function ({commit,state}){
-    let playmode = (state.playmode+1)%3
-    commit(types.SET_PLAY_MODE,playmode)
+export const changePlayMode = function ({commit, state}) {
+    let playmode = (state.playmode + 1) % 3
+    commit(types.SET_PLAY_MODE, playmode)
+}
+
+//收藏歌单
+export const saveToMyList = function ({commit, state}){
+    let playerLists = localStorage.getObject('playerLists')
+    if(playerLists == null){
+        playerLists = []
+    }
+
+    /*var playlist_id = 'myplaylist_' + guid();
+    playerLists.info.id = playlist_id;
+    playerLists.is_mine = 1;
+    playlists.push(playlist_id);
+    localStorage.setObject('playerlists', playlists);
+    localStorage.setObject(playlist_id, playlist);*/
+
 }

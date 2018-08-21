@@ -13,7 +13,7 @@
                                 <Icon type="ios-musical-notes" size="20" />
                                 发现音乐
                             </MenuItem>
-                            <MenuItem name="2" to="/info">
+                            <!--<MenuItem name="2" to="/info">
                                 <Icon type="ios-radio-outline" size="20"/>
                                 私人FM
                             </MenuItem>
@@ -24,11 +24,17 @@
                             <MenuItem name="4">
                                 <Icon type="md-contacts" size="20"/>
                                 朋友
-                            </MenuItem>
+                            </MenuItem>-->
                         </MenuGroup>
                         <MenuGroup title="我的音乐">
-                            <MenuItem name="5">
-                                <Icon type="ios-download-outline" size="20"/>
+                            <MenuItem name="5" to="/info">
+                                <Icon type="ios-download-outline"  size="20"/>
+                                下载管理
+                            </MenuItem>
+                        </MenuGroup>
+                        <MenuGroup title="我的歌单">
+                            <MenuItem  to="/myplay/">
+                                <Icon type="ios-musical-notes"  size="20"/>
                                 下载管理
                             </MenuItem>
                         </MenuGroup>
@@ -80,7 +86,11 @@
 <style lang="less">
   /* CSS */
   html,body{
-    height: 100%;
+      height: 100%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
   }
   #app{
     height: 100%;

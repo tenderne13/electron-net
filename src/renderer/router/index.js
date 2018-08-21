@@ -18,6 +18,10 @@ export default new VueRouter({
         {
             path: '/album/:id',
             component: AlbumDetail
+        },
+        {
+            path: '/myplaylist/:playlistId',
+            component: AlbumDetail
         }
     ]
 })

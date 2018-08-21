@@ -17,6 +17,7 @@
                 </div>
                 <div class="playBox">
                     <Button @click="addToPlayList">播放整个歌单</Button>
+                    <Button @click="addToPlayList" type="primary">收藏歌单</Button>
                 </div>
                 <div class="tag">
                     标签:
@@ -223,12 +224,13 @@
             }
         },
         created() {
-            this._getAlbumDetail()
+            const albumId = this.$route.params.id
+            this._getAlbumDetail(albumId)
         },
         methods: {
-            _getAlbumDetail(){
+            _getAlbumDetail(albumId){
                 this.isLoading = true
-                getAlbumDetail(this.album.id).then((res)=>{
+                getAlbumDetail(albumId).then((res)=>{
                     this.setTracks(res.playlist.tracks)
                     this.isLoading = false
                 })
